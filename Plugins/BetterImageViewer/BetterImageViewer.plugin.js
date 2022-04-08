@@ -2019,7 +2019,7 @@ module.exports = (() => {
         const SEARCH_SIDEBAR = 0.3601756956193265;
         const MEMBERS_SIDEBAR = 0.49048316246120055;
         Patcher.instead(LazyImage.prototype, 'handleSidebarChange', (_this, [forced]) => {
-          if (!this.settings.chat.resize || !SectionStore) return;
+          if (!this.settings.chat.resize) return;
           const { state } = _this;
           if (!XenoLib.DiscordAPI.channelId) {
             state.__BIV_sidebarMultiplier = null;
@@ -2028,25 +2028,25 @@ module.exports = (() => {
           const section = SectionStore.getSection();
           let newMultiplier;
           if (section === 'SEARCH') newMultiplier = SEARCH_SIDEBAR;
-          else if (section !== 'MEMBERS' || (!DiscordModules.SelectedGuildStore.getGuildId() && XenoLib.DiscordAPI.channel.type !== 'GROUP_DM')) newMultiplier = NO_SIDEBAR;
+          else if (section !== 'MEMBERS' || (!DiscordModules.SelectedGuildStore.getGuildId() && XenoLib.DiscordAPI.channel.type().type !== 'GROUP_DM')) newMultiplier = NO_SIDEBAR;
           else newMultiplier = MEMBERS_SIDEBAR;
           if (!forced && newMultiplier !== state.__BIV_sidebarMultiplier) _this.setState({ __BIV_sidebarMultiplier: newMultiplier });
           else state.__BIV_sidebarMultiplier = newMultiplier;
         });
         Patcher.after(LazyImage.prototype, 'componentDidMount', _this => {
-          if (typeof _this.props.__BIV_index !== 'undefined' /*  || _this.props.__BIV_isVideo */ || (_this.props.className && _this.props.className.indexOf('embedThumbnail') !== -1) || _this.props.__BIV_embed) {
+          if (typeof _this.props.__BIV_index !== 'undefined' /*  || _this.props.__BIV_isVideo */ || (_this.props.className && _this.props.className.indexOf('embedThumbnail') !== -1)) {
             _this.handleSidebarChange = null;
             return;
           }
           _this.handleSidebarChange = _this.handleSidebarChange.bind(_this);
-          if (SectionStore) SectionStore.addChangeListener(_this.handleSidebarChange);
+          SectionStore.addChangeListener(_this.handleSidebarChange);
         });
         Patcher.after(LazyImage.prototype, 'componentWillUnmount', _this => {
           if (!_this.handleSidebarChange) return;
-          if (SectionStore) SectionStore.removeChangeListener(_this.handleSidebarChange);
+          SectionStore.removeChangeListener(_this.handleSidebarChange);
         });
         Patcher.before(LazyImage.prototype, 'getRatio', _this => {
-          if ((!this.settings.chat.resize || !SectionStore) || _this.props.__BIV_embed) return;
+          if (!this.settings.chat.resize) return;
           if (!_this.handleSidebarChange || typeof _this.props.__BIV_index !== 'undefined' /*  || _this.props.__BIV_isVideo */ || (_this.props.className && _this.props.className.indexOf('embedThumbnail') !== -1)) return;
           if (typeof _this.state.__BIV_sidebarType === 'undefined') _this.handleSidebarChange(true);
           if (_this.state.__BIV_sidebarMultiplier === null) return;
