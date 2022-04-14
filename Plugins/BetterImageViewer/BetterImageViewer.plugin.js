@@ -2028,7 +2028,7 @@ module.exports = (() => {
           const section = SectionStore.getSection();
           let newMultiplier;
           if (section === 'SEARCH') newMultiplier = SEARCH_SIDEBAR;
-          else if (section !== 'MEMBERS' || (!DiscordModules.SelectedGuildStore.getGuildId() && XenoLib.DiscordAPI.channel.type().type !== 'GROUP_DM')) newMultiplier = NO_SIDEBAR;
+          else if (section !== 'MEMBERS' || (!DiscordModules.SelectedGuildStore.getGuildId() && XenoLib.DiscordAPI.channel.type() !== 'GROUP_DM')) newMultiplier = NO_SIDEBAR;
           else newMultiplier = MEMBERS_SIDEBAR;
           if (!forced && newMultiplier !== state.__BIV_sidebarMultiplier) _this.setState({ __BIV_sidebarMultiplier: newMultiplier });
           else state.__BIV_sidebarMultiplier = newMultiplier;
